@@ -27,26 +27,42 @@ class TaskController extends Controller
     }
 
     // R - READ (Listar y Filtrar)
-    public function indexWeb(Request $request)
-    {
-        $query = Task::query();
+public function indexWeb(Request $request)
+{
+    $query = Task::query();
 
-        $estado = $request->input('estado'); // Captura el valor del select
-        
-        // 🎯 CORRECCIÓN CLAVE: Aplicar filtro SOLO si el valor de 'estado' no está vacío
-        if ($estado && $estado !== '') { 
-            $query->where('estado', $estado);
-        }
-        
-        // Ejecuta la consulta
-        $tasks = $query->get(); 
+    $estado = $request->input('estado'); // Captura el valor del filtro de estado
+    $searchQuery = $request->input('q'); // 🎯 NUEVA LÍNEA: Captura el término de búsqueda
 
-        // Pasa las tareas y el estado actual (para mantener la selección del select) a la vista
-        return view('tasks.index', [
-            'tasks' => $tasks,
-            'selected_estado' => $estado // Opcional, pero ayuda a mantener la selección
-        ]);
+    // 1. Aplicar filtro por ESTADO
+    if ($estado && $estado !== '') { 
+        $query->where('estado', $estado);
     }
+    
+    // 2. 🎯 Aplicar filtro de BÚSQUEDA (en Título o Descripción)
+    if ($searchQuery) {
+        $query->where(function ($q) use ($searchQuery) {
+            // Utilizamos una expresión regular (RegEx) de MongoDB para búsquedas flexibles
+            // 'i' hace que la búsqueda sea insensible a mayúsculas/minúsculas.
+            
+            // Búsqueda en el Título
+            $q->where('titulo', 'like', '%' . $searchQuery . '%');
+            
+            // O Búsqueda en la Descripción
+            $q->orWhere('descripcion', 'like', '%' . $searchQuery . '%');
+        });
+    }
+
+    // Ejecuta la consulta
+    $tasks = $query->get(); 
+
+    // Pasa las tareas a la vista
+    return view('tasks.index', [
+        'tasks' => $tasks,
+        // No necesitamos pasar 'selected_estado' y 'q' explícitamente, 
+        // ya que la función request() de Blade los recupera de la URL.
+    ]);
+}
 
     // R - READ (Detalle para Edición)
     public function show($id) 

@@ -32,16 +32,34 @@
     </button>
 
     {{-- Filtros (Usando un formulario GET de Blade) --}}
-    <form method="GET" action="{{ route('tasks.index') }}" class="row mb-4">
-        <div class="col-md-4">
+    <form method="GET" action="{{ route('tasks.index') }}" class="row mb-4 align-items-end">
+        
+        {{-- CAMPO DE FILTRADO POR ESTADO (Existente) --}}
+        <div class="col-md-3">
             <label for="filter-state" class="form-label">Filtrar por Estado:</label>
-            <select id="filter-state" name="estado" class="form-select" onchange="this.form.submit()">
-                {{-- La opción "Todas" debe tener value="" --}}
+            <select id="filter-state" name="estado" class="form-select">
                 <option value="" @if(request('estado') == '') selected @endif>Todas</option>
                 <option value="pendiente" @if(request('estado') == 'pendiente') selected @endif>Pendiente</option>
                 <option value="en progreso" @if(request('estado') == 'en progreso') selected @endif>En Progreso</option>
                 <option value="completada" @if(request('estado') == 'completada') selected @endif>Completada</option>
             </select>
+        </div>
+
+        {{-- CAMPO DE BÚSQUEDA (NUEVO) --}}
+        <div class="col-md-5">
+            <label for="search-query" class="form-label">Buscar Tarea:</label>
+            <input type="text" id="search-query" name="q" class="form-control" 
+                   value="{{ request('q') }}" placeholder="Escribe tu término de búsqueda...">
+        </div>
+
+        {{-- BOTÓN DE BÚSQUEDA --}}
+        <div class="col-md-4 d-flex justify-content-start">
+            <button type="submit" class="btn btn-secondary me-2">Buscar</button>
+            
+            {{-- Botón para limpiar filtros --}}
+            @if(request('q') || request('estado'))
+                <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary">Limpiar</a>
+            @endif
         </div>
     </form>
 
