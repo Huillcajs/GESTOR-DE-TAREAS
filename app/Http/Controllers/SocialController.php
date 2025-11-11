@@ -59,7 +59,8 @@ class SocialController extends Controller
             return redirect()->route('tasks.index');
 
         } catch (\Exception $e) {
-            return redirect('/login')->withErrors('No se pudo iniciar sesión con ' . ucfirst($provider) . '.');
+            dd($e);
+            return redirect('tasks.index')->withErrors('No se pudo iniciar sesión con ' . ucfirst($provider) . '.');
         }
     }
 }
