@@ -25,6 +25,15 @@ class TaskController extends Controller
         $task = Task::create($request->all());
         return response()->json($task, 201);
     }
+    
+    public function index() 
+        {
+            // Obtener todas las tareas
+            $tasks = Task::all(); 
+
+            // Devolver las tareas como respuesta JSON
+            return response()->json($tasks);
+        }
 
     // R - READ (Listar y Filtrar)
 public function indexWeb(Request $request)
